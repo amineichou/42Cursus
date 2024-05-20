@@ -3,15 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_replace_dollar.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zyamli <zakariayamli00@gmail.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-<<<<<<< HEAD
 /*   Created: 2024/04/19 10:17:59 by moichou           #+#    #+#             */
-/*   Updated: 2024/04/30 15:35:01 by zyamli           ###   ########.fr       */
-=======
-/*   Created: 2024/04/30 15:51:03 by moichou           #+#    #+#             */
-/*   Updated: 2024/04/30 15:51:05 by moichou          ###   ########.fr       */
->>>>>>> 8ce7cc708d70a6cd7bffa1fa6716828af5b4a666
+/*   Updated: 2024/05/14 18:28:01 by zyamli           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +19,10 @@ char	*ft_env_list_serch_res(t_env *head, char *to_look)
 	if (!head || !to_look)
 		return (NULL);
 	tmp = head;
-	while(tmp)
+	while (tmp)
 	{
-		if(ft_strcmp(tmp->name, to_look) == 0)
-			return(ft_strdup(tmp->var));
+		if (ft_strcmp(tmp->name, to_look) == 0)
+			return (ft_strdup(tmp->var, false));
 		tmp = tmp->next;
 	}
 	return (NULL);
@@ -46,11 +41,13 @@ static char	*ft_get_to_look(char *str, int *i)
 		(*i)++;
 		length++;
 	}
-	res = ft_strldup(&str[start], length); // TODO : protection
+	res = ft_strldup(&str[start], length);
+	if (!res)
+		return (NULL);
 	return (res);
 }
 
-static char	*ft_fill_arg(char *str, int *i, t_env *env, int ex_sta)
+static char	*ft_fill_arg(char *str, int *i, t_env *env)
 {
 	char	*res;
 	char	*to_look;
@@ -61,16 +58,21 @@ static char	*ft_fill_arg(char *str, int *i, t_env *env, int ex_sta)
 	if (str[*i] == '?')
 	{
 		(*i)++;
-		return (ft_itoa(ex_sta));
+		return (ft_itoa(ft_set_status(0, 0), true));
 	}
 	if (str[*i] == '\0' || !ft_is_alphanumeric(str[*i]))
-		return (ft_strdup("$"));
+		return (ft_strdup("$", true));
 	to_look = ft_get_to_look(str, i);
 	res = ft_env_list_serch_res(env, to_look);
 	return (res);
 }
 
-char	*ft_replace_dollar(char *str, t_env *env, int ex_sta)
+static char	*ft_replace_dollar_handler(char *res, char *str, int i, int start)
+{
+	return (ft_strjoin(res, ft_strldup(&str[start], i - start), true));
+}
+
+char	*ft_replace_dollar(char *str, t_env *env)
 {
 	char	*res;
 	int		i;
@@ -86,15 +88,15 @@ char	*ft_replace_dollar(char *str, t_env *env, int ex_sta)
 			if (str[i] == '$')
 			{
 				if (start != i)
-					res = ft_strjoin(res, ft_strldup(&str[start], i - start));
+					res = ft_replace_dollar_handler(res, str, i, start);
 				break ;
 			}
 			i++;
 			if (str[i] == '\0')
-				res = ft_strjoin(res, ft_strldup(&str[start], i - start));
+				res = ft_strjoin(res, ft_strldup(&str[start], i - start), true);
 		}
 		if (str[i] && str[i] == '$')
-			res = ft_strjoin(res, ft_fill_arg(str, &i, env, ex_sta));
+			res = ft_strjoin(res, ft_fill_arg(str, &i, env), true);
 	}
 	return (res);
 }

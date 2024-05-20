@@ -29,7 +29,7 @@ void	test_lst(t_toexec *lst)
 	}
 }
 
-static char* token_to_string(token t) {
+static char* token_to_string(t_tokenenm t) {
     switch (t) {
         case WORD:
             return "WORD";
@@ -41,8 +41,6 @@ static char* token_to_string(token t) {
             return "RD_RP";
         case RD_IN:
             return "RD_IN";
-        case RD_OUT:
-            return "RD_OUT";
         case HEREDOC:
             return "HEREDOC";
         default:
@@ -69,3 +67,8 @@ void	printf_test(char *str)
 {
 	printf("\033[0;31m%s\n\033[0;0m", str);
 }
+// int main(void)
+// {
+// 	char *arg[] = {"/bin/bash", "-c","ps -j $$ | awk 'NR==2 {print $3}'", NULL};
+// 	execve("/bin/bash", arg, NULL);
+// }

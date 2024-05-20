@@ -1,40 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   t_herdoc_tools.c                                   :+:      :+:    :+:   */
+/*   status_tools.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/28 11:34:29 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/14 10:28:02 by moichou          ###   ########.fr       */
+/*   Created: 2024/05/14 12:32:10 by moichou           #+#    #+#             */
+/*   Updated: 2024/05/19 15:00:47 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-t_herdoc	*ft_create_herdoc_node(char *del)
+int	ft_set_status(int new_status, int type)
 {
-	t_herdoc	*node;
+	static int	old_status;
 
-	node = zyalloc(sizeof(t_herdoc), 'a', true);
-	if (!node)
-		return (ft_printerror(MALLOC_ERORR), NULL);
-	node->del = del;
-	node->next = NULL;
-	return (node);
+	if (type)
+		old_status = new_status;
+	return (old_status);
 }
 
-void	ft_append_node_herdoc(t_herdoc **head, t_herdoc *node)
+// this func will set t_toexec node to it's default values
+void	ft_set_default_vals(t_toexec *node, t_env *envl)
 {
-	t_herdoc	*last;
-
-	if ((*head) == NULL)
-	{
-		(*head) = node;
-		return ;
-	}
-	last = (*head);
-	while (last->next)
-		last = last->next;
-	last->next = node;
+	node->input = 0;
+	node->output = 1;
+	node->args = NULL;
+	node->env = envl;
 }
