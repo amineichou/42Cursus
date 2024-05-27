@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 16:23:00 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/22 14:35:38 by moichou          ###   ########.fr       */
+/*   Updated: 2024/05/27 09:39:55 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,21 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	return (res * sign);
+}
+
+void	ft_appand_philosopher(t_philosopher **head, t_philosopher *node)
+{
+	t_philosopher	*tmp;
+
+	tmp = *head;
+	if (tmp == NULL)
+	{
+		(*head) = node;
+		node->next = NULL;
+		return ;
+	}
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = node;
+	node->next = NULL;
 }

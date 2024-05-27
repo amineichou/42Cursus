@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/22 14:55:25 by moichou          ###   ########.fr       */
+/*   Updated: 2024/05/27 20:04:04 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,23 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <limits.h>
+#include <sys/time.h>
 
 typedef struct s_philoinfo
 {
-	int	number_of_philosophers;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	number_of_times_each_philosopher_must_eat;
+	int				number_of_philosophers;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				number_of_times_each_philosopher_must_eat;
+	struct timeval	timestamp;
 }	t_philoinfo;
 
 typedef struct s_philosopher
 {
-	int					id;
-	int					thread_id;
-	struct philosophers	*next;
+	int						id;
+	t_philoinfo				*info;
+	struct s_philosopher	*next;
 }	t_philosopher;
 
 int		ft_parser(char **av, int ac);
@@ -40,6 +42,7 @@ int		ft_isdigit(char c);
 int		ft_isspace(char c);
 void	ft_printerror(char *msg);
 int		ft_atoi(const char *str);
-void	ft_start_philo(t_philoinfo *info);
+void	ft_init_simulation(int ac, char **av);
+void	*ft_routine(void *arg);
 
 #endif
