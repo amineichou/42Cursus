@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/27 20:04:04 by moichou          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:56:03 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <pthread.h>
 #include <limits.h>
 #include <sys/time.h>
+#include <stdbool.h>
 
 typedef struct s_philoinfo
 {
@@ -27,6 +28,7 @@ typedef struct s_philoinfo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_times_each_philosopher_must_eat;
+	bool			philo_died;
 	struct timeval	timestamp;
 }	t_philoinfo;
 
@@ -35,6 +37,7 @@ typedef struct s_philosopher
 	int						id;
 	t_philoinfo				*info;
 	struct s_philosopher	*next;
+	pthread_t				id_thread;
 }	t_philosopher;
 
 int		ft_parser(char **av, int ac);

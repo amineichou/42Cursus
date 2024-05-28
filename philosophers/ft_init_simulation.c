@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 14:51:10 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/27 20:04:13 by moichou          ###   ########.fr       */
+/*   Updated: 2024/05/28 22:42:42 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,14 @@ static void	ft_appand_philosopher(t_philosopher **head, t_philosopher *node)
 	if (*head == NULL)
 	{
 		*head = node;
+		node->next = (*head);
 		return ;
 	}
-	while (tmp->id != 1)
+	tmp = tmp->next;
+	while (tmp->next->id != 1)
 		tmp = tmp->next;
 	tmp->next = node;
-	node->next = *head;
+	node->next = (*head);
 }
 
 static t_philosopher	*ft_create_philos(t_philoinfo *info)
@@ -60,6 +62,7 @@ void	ft_init_simulation(int ac, char **av)
 	info.time_to_die = ft_atoi(av[2]);
 	info.time_to_eat = ft_atoi(av[3]);
 	info.time_to_sleep = ft_atoi(av[4]);
+	info.philo_died = 0;
 	info.timestamp = a;
 	if (ac == 6)
 		info.number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
@@ -68,15 +71,18 @@ void	ft_init_simulation(int ac, char **av)
 	head = ft_create_philos(&info);
 	if (!head)
 		return ;
-	// start simulation
+	// create threads
 	t_philosopher *tmp = head;
 	while (tmp)
 	{
-		pthread_t philo;
-		pthread_create(&philo, NULL, &ft_routine, head);
-		pthread_join(philo, NULL);
+		pthread_create(&tmp->id_thread, NULL, &ft_routine, tmp);
 		tmp = tmp->next;
-		if (tmp && tmp->id == 1)
-			break ;
 	}
+	// start simulation
+	while (tmp)
+	{
+		pthread_detach(tmp->id_thread);
+		tmp = tmp->next;
+	}
+	
 }
