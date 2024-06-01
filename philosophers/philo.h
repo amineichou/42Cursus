@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/05/28 21:56:03 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/01 21:10:16 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,20 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
+typedef struct s_fork
+{
+	pthread_mutex_t	lock;
+	int				id;
+	struct s_fork	*next;
+}	t_fork;
+
 typedef struct s_philoinfo
 {
 	int				number_of_philosophers;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				number_of_times_each_philosopher_must_eat;
+	int				num__must_eat;
 	bool			philo_died;
 	struct timeval	timestamp;
 }	t_philoinfo;
@@ -36,9 +43,20 @@ typedef struct s_philosopher
 {
 	int						id;
 	t_philoinfo				*info;
+	pthread_mutex_t			*lock_print;
+	pthread_mutex_t			*lock_die_time;
+	pthread_mutex_t			*lock_var_died;
+	pthread_mutex_t			*rotine;
 	struct s_philosopher	*next;
 	pthread_t				id_thread;
 }	t_philosopher;
+
+typedef enum s_routine
+{
+	EAT,
+	SLEEP,
+	THINK
+}	t_routine;
 
 int		ft_parser(char **av, int ac);
 int		ft_isdigit(char c);
@@ -47,5 +65,6 @@ void	ft_printerror(char *msg);
 int		ft_atoi(const char *str);
 void	ft_init_simulation(int ac, char **av);
 void	*ft_routine(void *arg);
+void	*ft_monitor(void *arg);
 
 #endif
