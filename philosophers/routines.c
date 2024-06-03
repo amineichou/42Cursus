@@ -6,40 +6,95 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 17:57:12 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/01 22:00:17 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/03 20:09:50 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	ft_eat(t_philosopher *philo)
+char *ft_get_routine(t_routine routine)
 {
-	(void)philo;
-	printf("%d %d is eating....\n", philo->info->timestamp.tv_usec, philo->id);
-	usleep(philo->info->time_to_eat);
+	if (routine == 0)
+		return ("eating");
+	else if (routine == 1)
+		return ("sleeping");
+	else if (routine == 2)
+		return ("thinking");
+	return ("nothing");
 }
 
-static void	ft_sleep(t_philosopher *philo)
+long long	ft_get_time(void)
 {
-	(void)philo;
-	printf("%d %d is sleeping...\n", philo->info->timestamp.tv_usec, philo->id);
-	usleep(philo->info->time_to_sleep);
+	struct timeval	timestamp;
+	gettimeofday(&timestamp, NULL);
+	return ((long long)timestamp.tv_sec * 1000 + (long long)timestamp.tv_usec / 1000);
 }
 
-static void	ft_think(t_philosopher *philo)
+void	ft_take_fork(t_philosopher *philo)
 {
-	(void)philo;
-	printf("%d %d is thinking...\n", philo->info->timestamp.tv_usec, philo->id);
+	t_fork	*closest;
+
+	closest = philo->forks;
+	while (closest->id != philo->id)
+		closest = closest->next;
+	pthread_mutex_lock(&closest->lock);
+	printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	// take the second fork
+	if (closest->next)
+	{
+		pthread_mutex_lock(&closest->next->lock);
+		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	}
+	else
+	{
+		pthread_mutex_lock(&philo->forks->lock);
+		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	}
 }
-// static void	ft_start_routine(t_routine routine, t_philosopher *philo)
-// {
-// 	if (routine == EAT)
-// 		ft_safe_print(EAT, philo);
-// 	else if (routine == SLEEP)
-// 		ft_safe_print(SLEEP, philo);
-// 	else if (routine == THINK)
-// 		ft_safe_print(THINK, philo);
-// }
+
+void ft_let_fork(t_philosopher *philo)
+{
+	t_fork	*closest;
+
+	closest = philo->forks;
+	while (closest->id != philo->id)
+		closest = closest->next;
+	pthread_mutex_unlock(&closest->lock);
+	// let the second fork
+	if (closest->next)
+	{
+		pthread_mutex_unlock(&closest->next->lock);
+		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	}
+	else
+	{
+		pthread_mutex_unlock(&philo->forks->lock);
+		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	}
+}
+
+void ft_safe_print(t_routine routine, t_philosopher *philo)
+{
+	if (routine == EAT)
+		ft_take_fork(philo);
+	pthread_mutex_lock(philo->lock_print);
+	printf("%lld %d is %s...\n", ft_get_time(), philo->id, ft_get_routine(routine));
+	if (routine == SLEEP)
+		usleep(philo->info->time_to_sleep);
+	pthread_mutex_unlock(philo->lock_print);
+	if (routine == EAT)
+		ft_let_fork(philo);
+}
+
+static void	ft_start_routine(t_routine routine, t_philosopher *philo)
+{
+	if (routine == EAT)
+		ft_safe_print(EAT, philo);
+	else if (routine == SLEEP)
+		ft_safe_print(SLEEP, philo);
+	else if (routine == THINK)
+		ft_safe_print(THINK, philo);
+}
 
 void	*ft_monitor(void *arg)
 {
@@ -50,7 +105,7 @@ void	*ft_monitor(void *arg)
 	{
 		pthread_mutex_lock(philo_lst->rotine);
 		if (philo_lst->info->time_to_die == 0)
-			(printf("%d %d died\n", philo_lst->info->timestamp.tv_usec, philo_lst->id), exit(0));
+			(printf("%lld %d died\n", ft_get_time(), philo_lst->id), exit(0));
 		pthread_mutex_unlock(philo_lst->rotine);
 		philo_lst = philo_lst->next;
 		if (philo_lst->id == 1)
@@ -66,11 +121,9 @@ void	*ft_routine(void *arg)
 	philo = (t_philosopher *)arg;
 	while (philo->info->time_to_die)
 	{
-		pthread_mutex_lock(philo->lock_print);
-		ft_eat(philo);
-		ft_sleep(philo);
-		ft_think(philo);
-		pthread_mutex_unlock(philo->lock_print);
+		ft_start_routine(0, philo);
+		ft_start_routine(1, philo);
+		ft_start_routine(2, philo);
 	}
 	return (NULL);
 }

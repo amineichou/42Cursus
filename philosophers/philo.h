@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/01 21:10:16 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/03 20:17:40 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <limits.h>
 #include <sys/time.h>
 #include <stdbool.h>
+
 
 typedef struct s_fork
 {
@@ -36,7 +37,6 @@ typedef struct s_philoinfo
 	int				time_to_sleep;
 	int				num__must_eat;
 	bool			philo_died;
-	struct timeval	timestamp;
 }	t_philoinfo;
 
 typedef struct s_philosopher
@@ -49,6 +49,7 @@ typedef struct s_philosopher
 	pthread_mutex_t			*rotine;
 	struct s_philosopher	*next;
 	pthread_t				id_thread;
+	t_fork					*forks;
 }	t_philosopher;
 
 typedef enum s_routine

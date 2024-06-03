@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 14:51:10 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/01 21:45:32 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/03 19:55:03 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	ft_appand_philosopher(t_philosopher **head, t_philosopher *node)
 	node->next = (*head);
 }
 
-static t_philosopher	*ft_create_philos(t_philoinfo *info)
+static t_philosopher	*ft_create_philos(t_philoinfo *info, t_fork *forks)
 {
 	t_philosopher	*lst;
 	t_philosopher	*node;
@@ -56,6 +56,7 @@ static t_philosopher	*ft_create_philos(t_philoinfo *info)
 		node->lock_die_time = &lock_die_time; 
 		node->lock_var_died = &lock_var_died; 
 		node->rotine = &rotine;
+		node->forks = forks;
 		id++;
 		ft_appand_philosopher(&lst, node);
 	}
@@ -105,27 +106,24 @@ void	ft_init_simulation(int ac, char **av)
 	t_philosopher	*head;
 	t_philoinfo		info;
 	t_fork			*forks;
-	struct timeval	a;
 	int				i;
 
-	gettimeofday(&a, NULL);
 	i = 0;
 	info.number_of_philosophers = ft_atoi(av[1]);
 	info.time_to_die = ft_atoi(av[2]);
 	info.time_to_eat = ft_atoi(av[3]);
 	info.time_to_sleep = ft_atoi(av[4]);
 	info.philo_died = 0;
-	info.timestamp = a;
 	if (ac == 6)
 		info.num__must_eat = ft_atoi(av[5]);
 	else
 		info.num__must_eat = -1;
-	// create philosphers
-	head = ft_create_philos(&info);
-	if (!head)
-		return ;
 	// create forks
 	forks = ft_create_forks(info.number_of_philosophers);
+	// create philosphers
+	head = ft_create_philos(&info, forks);
+	if (!head)
+		return ;
 	// create monitor thread
 	pthread_t	monitor_th;
 	pthread_create(&monitor_th, NULL, &ft_monitor, head);
