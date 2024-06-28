@@ -30,6 +30,20 @@ static void	ft_appand_philosopher(t_philosopher **head, t_philosopher *node)
 	node->next = (*head);
 }
 
+t_fork	*get_fork(t_fork *forks, int index)
+{
+	t_fork	*tmp;
+
+	tmp = forks;
+	while (tmp)
+	{
+		if (tmp->id == index)
+			return (tmp);
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
 static t_philosopher	*ft_create_philos(t_philoinfo *info, t_fork *forks)
 {
 	t_philosopher	*lst;
@@ -49,14 +63,20 @@ static t_philosopher	*ft_create_philos(t_philoinfo *info, t_fork *forks)
 	int i = info->number_of_philosophers;
 	while (i--)
 	{
-		node = malloc(sizeof(t_philosopher));
+		node = ft_malloc(sizeof(t_philosopher));
 		node->id = id;
 		node->info = info;
 		node->lock_print = &lock_print;
 		node->lock_die_time = &lock_die_time; 
-		node->lock_var_died = &lock_var_died; 
+		node->lock_var_died = &lock_var_died;
 		node->rotine = &rotine;
-		node->forks = forks;
+		node->fst_fork = get_fork(forks,(id + 1) % info->number_of_philosophers);
+		node->sec_fork = get_fork(forks, id);
+		if (id % 2 == 0)
+		{
+			node->fst_fork = get_fork(forks, id);
+			node->sec_fork = get_fork(forks,(id + 1) % info->number_of_philosophers);
+		}
 		id++;
 		ft_appand_philosopher(&lst, node);
 	}
@@ -78,25 +98,24 @@ void ft_append_fork(t_fork **lst, t_fork *node)
 	tmp->next = node;
 }
 
-t_fork	*ft_create_forks(int number_of_philosophers)
+t_fork	*ft_create_forks(t_philoinfo *info)
 {
 	t_fork	*lst;
 	t_fork	*node;
 	int		id;
+	int		philo_num;
 
 	lst = NULL;
 	id = 1;
-	number_of_philosophers++;
-	while (number_of_philosophers)
+	philo_num = info->number_of_philosophers + 1;
+	while (philo_num)
 	{
-		node = malloc(sizeof(t_fork));
-		if (!node)
-			exit(1);
+		node = ft_malloc(sizeof(t_fork));
 		node->id = id;
 		node->next = NULL;
 		ft_append_fork(&lst, node);
 		id++;
-		number_of_philosophers--;
+		philo_num--;
 	}
 	return (lst);
 }
@@ -119,7 +138,7 @@ void	ft_init_simulation(int ac, char **av)
 	else
 		info.num__must_eat = -1;
 	// create forks
-	forks = ft_create_forks(info.number_of_philosophers);
+	forks = ft_create_forks(&info);
 	// create philosphers
 	head = ft_create_philos(&info, forks);
 	if (!head)

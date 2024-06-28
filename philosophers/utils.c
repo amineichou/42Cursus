@@ -80,3 +80,15 @@ void	ft_appand_philosopher(t_philosopher **head, t_philosopher *node)
 	tmp->next = node;
 	node->next = NULL;
 }
+
+
+void	*ft_malloc(int size)
+{
+	void	*ptr = malloc(size);
+	if (!size)
+	{
+		ft_printerror("malloc error !\n");
+		exit(1);
+	}
+	return (ptr);
+}

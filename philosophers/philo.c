@@ -27,7 +27,10 @@ int main(int ac, char **av)
 	if (ac == 5 || ac == 6)
 	{
 		if (ft_parser(av, ac))
+		{
 			ft_init_simulation(ac, av);
+			// clean up
+		}
 	}
 	else if (ac > 1)
 		ft_printerror("no valid arguments\n");

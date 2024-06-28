@@ -32,58 +32,33 @@ long long	ft_get_time(void)
 
 void	ft_take_fork(t_philosopher *philo)
 {
-	t_fork	*closest;
-
-	closest = philo->forks;
-	while (closest->id != philo->id)
-		closest = closest->next;
-	pthread_mutex_lock(&closest->lock);
+	pthread_mutex_lock(&philo->fst_fork->lock);
 	printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	// take the second fork
-	if (closest->next)
-	{
-		pthread_mutex_lock(&closest->next->lock);
-		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	}
-	else
-	{
-		pthread_mutex_lock(&philo->forks->lock);
-		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	}
+	pthread_mutex_lock(&philo->sec_fork->lock);
+	printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	printf("hello\n");
 }
 
 void ft_let_fork(t_philosopher *philo)
 {
-	t_fork	*closest;
-
-	closest = philo->forks;
-	while (closest->id != philo->id)
-		closest = closest->next;
-	pthread_mutex_unlock(&closest->lock);
-	// let the second fork
-	if (closest->next)
-	{
-		pthread_mutex_unlock(&closest->next->lock);
-		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	}
-	else
-	{
-		pthread_mutex_unlock(&philo->forks->lock);
-		printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	}
+	pthread_mutex_unlock(&philo->fst_fork->lock);
+	pthread_mutex_unlock(&philo->sec_fork->lock);
 }
 
 void ft_safe_print(t_routine routine, t_philosopher *philo)
 {
 	if (routine == EAT)
+	{
 		ft_take_fork(philo);
-	pthread_mutex_lock(philo->lock_print);
-	printf("%lld %d is %s...\n", ft_get_time(), philo->id, ft_get_routine(routine));
+		// check death
+	}
 	if (routine == SLEEP)
 		usleep(philo->info->time_to_sleep);
-	pthread_mutex_unlock(philo->lock_print);
 	if (routine == EAT)
 		ft_let_fork(philo);
+	pthread_mutex_lock(philo->lock_print);
+	printf("%lld %d is %s...\n", ft_get_time(), philo->id, ft_get_routine(routine));
+	pthread_mutex_unlock(philo->lock_print);
 }
 
 static void	ft_start_routine(t_routine routine, t_philosopher *philo)
@@ -119,11 +94,11 @@ void	*ft_routine(void *arg)
 	t_philosopher	*philo;
 
 	philo = (t_philosopher *)arg;
-	while (philo->info->time_to_die)
+	while (1)
 	{
-		ft_start_routine(0, philo);
-		ft_start_routine(1, philo);
-		ft_start_routine(2, philo);
+		ft_start_routine(EAT, philo);
+		ft_start_routine(SLEEP, philo);
+		ft_start_routine(THINK, philo);
 	}
 	return (NULL);
 }
