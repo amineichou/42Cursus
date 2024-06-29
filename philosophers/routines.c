@@ -57,7 +57,7 @@ void	*ft_monitor(void *arg)
 		int id = philo_lst->id;
 		if (test > philo_lst->info->time_to_die)
 		{
-			printf("%lld %d died\n", ft_get_time(), id);
+			ft_safe_print(philo_lst, "died", -1);
 			exit(0);
 		}
 		if (philo_lst->next == NULL)

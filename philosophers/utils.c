@@ -96,7 +96,7 @@ void	*ft_malloc(int size)
 void	ft_safe_print(t_philosopher *philo, char *message, t_routine routine)
 {
 	pthread_mutex_lock(philo->lock_print);
-	printf("%lld %d %s %s...\n", ft_get_time(), philo->id, message, ft_get_routine(routine));
+	printf("%lld %d %s %s...\n", ft_get_time() - philo->info->start_time, philo->id, message, ft_get_routine(routine));
 	pthread_mutex_unlock(philo->lock_print);
 }
 
@@ -115,7 +115,7 @@ long long	ft_get_time(void)
 {
 	struct timeval	timestamp;
 	gettimeofday(&timestamp, NULL);
-	return ((long long)timestamp.tv_sec * 1000 + (long long)timestamp.tv_usec / 1000);
+	return (((long long)timestamp.tv_sec * 1000 + (long long)timestamp.tv_usec / 1000));
 }
 
 void	ft_usleep(size_t time)

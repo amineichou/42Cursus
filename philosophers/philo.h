@@ -36,6 +36,7 @@ typedef struct s_philoinfo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num__must_eat;
+	long long		start_time;
 	bool			philo_died;
 	pthread_mutex_t	philo_died_lock;
 	t_fork			*forks;

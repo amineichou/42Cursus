@@ -135,6 +135,7 @@ void	ft_init_simulation(int ac, char **av)
 		info.num__must_eat = ft_atoi(av[5]);
 	else
 		info.num__must_eat = -1;
+	info.start_time = ft_get_time();
 	pthread_mutex_init(&info.philo_died_lock, NULL);
 	// create forks
 	forks = ft_create_forks(&info);
@@ -143,14 +144,8 @@ void	ft_init_simulation(int ac, char **av)
 	if (!head)
 		return ;
 	// create monitor thread
-
-
-	// t_philosopher *tmp = head;
-	// while (tmp)
-	// {
-	// 	printf("%d %d\n", tmp->fst_fork->id, tmp->sec_fork->id);
-	// 	tmp = tmp->next;
-	// }
+	pthread_t	monitor_th;
+	pthread_create(&monitor_th, NULL, &ft_monitor, head);
 
 	// create threads
 	t_philosopher *tmp = head;
@@ -160,16 +155,10 @@ void	ft_init_simulation(int ac, char **av)
 		pthread_create(&tmp->id_thread, NULL, &ft_routine, tmp);
 		tmp = tmp->next;
 	}
-	// while (tmp)
-	// {
-	// 	pthread_create(&tmp->id_thread, NULL, &ft_routine, tmp);
-	// 	tmp = tmp->next;
-	// }
 	// start simulation
-	pthread_t	monitor_th;
-	pthread_create(&monitor_th, NULL, &ft_monitor, head);
 	tmp = head;
-	for (int i = 0; i < tmp->info->number_of_philosophers; i++) {
+	while (tmp)
+	{
 		pthread_join(tmp->id_thread, NULL);
 		tmp = tmp->next;
 	}
