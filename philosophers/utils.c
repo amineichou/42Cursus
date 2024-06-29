@@ -92,3 +92,39 @@ void	*ft_malloc(int size)
 	}
 	return (ptr);
 }
+
+void	ft_safe_print(t_philosopher *philo, char *message, t_routine routine)
+{
+	pthread_mutex_lock(philo->lock_print);
+	printf("%lld %d %s %s...\n", ft_get_time(), philo->id, message, ft_get_routine(routine));
+	pthread_mutex_unlock(philo->lock_print);
+}
+
+char *ft_get_routine(t_routine routine)
+{
+	if (routine == 0)
+		return ("eating");
+	else if (routine == 1)
+		return ("sleeping");
+	else if (routine == 2)
+		return ("thinking");
+	return ("");
+}
+
+long long	ft_get_time(void)
+{
+	struct timeval	timestamp;
+	gettimeofday(&timestamp, NULL);
+	return ((long long)timestamp.tv_sec * 1000 + (long long)timestamp.tv_usec / 1000);
+}
+
+void	ft_usleep(size_t time)
+{
+	long	start;
+
+	start = ft_get_time();
+	while (ft_get_time() - start < time)
+	{
+		usleep(1);
+	}
+}

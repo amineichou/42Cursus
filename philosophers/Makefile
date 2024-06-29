@@ -1,6 +1,6 @@
 NAME = philo
 CC = cc
-FLAGS =  -g -fsanitize=thread -Wall -Wextra -Werror
+FLAGS =  -g -fsanitize=thread # -Wall -Wextra -Werror
 SRC = philo.c parser.c utils.c ft_init_simulation.c routines.c
 OBJ = $(SRC:.c=.o)
 

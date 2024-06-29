@@ -12,79 +12,58 @@
 
 #include "philo.h"
 
-char *ft_get_routine(t_routine routine)
-{
-	if (routine == 0)
-		return ("eating");
-	else if (routine == 1)
-		return ("sleeping");
-	else if (routine == 2)
-		return ("thinking");
-	return ("nothing");
-}
-
-long long	ft_get_time(void)
-{
-	struct timeval	timestamp;
-	gettimeofday(&timestamp, NULL);
-	return ((long long)timestamp.tv_sec * 1000 + (long long)timestamp.tv_usec / 1000);
-}
-
-void	ft_take_fork(t_philosopher *philo)
+void	ft_eat(t_philosopher *philo)
 {
 	pthread_mutex_lock(&philo->fst_fork->lock);
-	printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
+	ft_safe_print(philo, "has taken a fork", -1);
 	pthread_mutex_lock(&philo->sec_fork->lock);
-	printf("%lld %d has taken a fork\n", ft_get_time(), philo->id);
-	printf("hello\n");
-}
-
-void ft_let_fork(t_philosopher *philo)
-{
+	ft_safe_print(philo, "has taken a fork", -1);
+	ft_usleep(philo->info->time_to_eat);
+	pthread_mutex_lock(&philo->last_meal_lock);
+	philo->last_meal = ft_get_time();
+	pthread_mutex_unlock(&philo->last_meal_lock);
 	pthread_mutex_unlock(&philo->fst_fork->lock);
 	pthread_mutex_unlock(&philo->sec_fork->lock);
-}
-
-void ft_safe_print(t_routine routine, t_philosopher *philo)
-{
-	if (routine == EAT)
-	{
-		ft_take_fork(philo);
-		// check death
-	}
-	if (routine == SLEEP)
-		usleep(philo->info->time_to_sleep);
-	if (routine == EAT)
-		ft_let_fork(philo);
-	pthread_mutex_lock(philo->lock_print);
-	printf("%lld %d is %s...\n", ft_get_time(), philo->id, ft_get_routine(routine));
-	pthread_mutex_unlock(philo->lock_print);
 }
 
 static void	ft_start_routine(t_routine routine, t_philosopher *philo)
 {
 	if (routine == EAT)
-		ft_safe_print(EAT, philo);
+		ft_eat(philo);
 	else if (routine == SLEEP)
-		ft_safe_print(SLEEP, philo);
+	{
+		ft_safe_print(philo, "is", SLEEP);
+		ft_usleep(philo->info->time_to_sleep);
+	}
 	else if (routine == THINK)
-		ft_safe_print(THINK, philo);
+	{
+		ft_safe_print(philo, "is", THINK);
+	}
 }
 
 void	*ft_monitor(void *arg)
 {
 	t_philosopher	*philo_lst;
+	t_philosopher	*head;
+	long 			test;
 
 	philo_lst = (t_philosopher *)arg;
-	while (philo_lst)
+	head = philo_lst;
+	while (true)
 	{
-		pthread_mutex_lock(philo_lst->rotine);
-		if (philo_lst->info->time_to_die == 0)
-			(printf("%lld %d died\n", ft_get_time(), philo_lst->id), exit(0));
-		pthread_mutex_unlock(philo_lst->rotine);
-		philo_lst = philo_lst->next;
-		if (philo_lst->id == 1)
-			break ;
+		pthread_mutex_lock(&philo_lst->last_meal_lock);
+		test = ft_get_time() - philo_lst->last_meal;
+		pthread_mutex_unlock(&philo_lst->last_meal_lock);
+		int id = philo_lst->id;
+		if (test > philo_lst->info->time_to_die)
+		{
+			printf("%lld %d died\n", ft_get_time(), id);
+			exit(0);
+		}
+		if (philo_lst->next == NULL)
+			philo_lst = head;
+		else
+			philo_lst = philo_lst->next;
 	}
 	return (NULL);
 }
