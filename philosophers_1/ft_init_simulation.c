@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 14:51:10 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/30 16:25:54 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 18:38:43 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,18 +121,17 @@ t_fork	*ft_create_forks(t_philoinfo *info)
 	return (lst);
 }
 
-bool	check_health(t_philosopher *philo)
+bool	check_death(t_philosopher *philo)
 {
 	long	tmp;
 
 	pthread_mutex_lock(&philo->last_meal_lock);
 	tmp = philo->last_meal;
 	pthread_mutex_unlock(&philo->last_meal_lock);
+
 	if (ft_get_time() - tmp > philo->info->time_to_die)
 	{
-		pthread_mutex_lock(&philo->info->philo_died_lock);
-		philo->info->philo_died = true;
-		pthread_mutex_unlock(&philo->info->philo_died_lock);
+		ft_set_val_b(&philo->info->philo_died_lock, &philo->info->philo_died, true);
 		ft_safe_print(philo, "died", -1);
 		return (0);
 	}
@@ -144,7 +143,7 @@ void	ft_monitor(t_philosopher *head)
 	t_philosopher	*philo;
 
 	philo = head;
-	while (philo && check_health(philo))
+	while (philo && check_death(philo))
 	{
 		if (philo->next == NULL)
 			philo = head;
@@ -153,14 +152,12 @@ void	ft_monitor(t_philosopher *head)
 	}
 }
 
-void	ft_init_simulation(int ac, char **av)
+t_philosopher	*ft_init_simulation(int ac, char **av)
 {
 	t_philosopher	*head;
 	t_philoinfo		info;
 	t_fork			*forks;
-	int				i;
 
-	i = 0;
 	info.number_of_philosophers = ft_atoi(av[1]);
 	info.time_to_die = ft_atoi(av[2]);
 	info.time_to_eat = ft_atoi(av[3]);
@@ -170,29 +167,13 @@ void	ft_init_simulation(int ac, char **av)
 		info.num__must_eat = ft_atoi(av[5]);
 	else
 		info.num__must_eat = -1;
-	info.start_time = ft_get_time();
 	pthread_mutex_init(&info.philo_died_lock, NULL);
-
 	// create forks
 	forks = ft_create_forks(&info);
 	// create philosphers
 	head = ft_create_philos(&info, forks);
 	if (!head)
-		return ;
-	// create threads
-	t_philosopher *tmp = head;
-	while (tmp)
-	{
-		pthread_create(&tmp->id_thread, NULL, ft_routine, tmp);
-		tmp = tmp->next;
-	}
-	// create monitor thread
-	ft_monitor(head);
-	// start simulation
-	tmp = head;
-	while (tmp)
-	{
-		pthread_join(tmp->id_thread, NULL);
-		tmp = tmp->next;
-	}
+		return (NULL);
+	info.start_time = ft_get_time();
+	return (head);
 }

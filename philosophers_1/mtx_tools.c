@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 15:48:49 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/30 16:24:36 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 20:09:28 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 long	ft_get_val(pthread_mutex_t *mtx, long value)
 {
 	long	new;
+
 	pthread_mutex_lock(mtx);
 	new = value;
 	pthread_mutex_unlock(mtx);
@@ -28,11 +29,12 @@ void	ft_set_val(pthread_mutex_t *mtx, long *value, long new)
 	pthread_mutex_unlock(mtx);
 }
 
-bool	ft_get_val_b(pthread_mutex_t *mtx, bool value)
+bool	ft_get_val_b(pthread_mutex_t *mtx, bool *value)
 {
 	bool	new;
+
 	pthread_mutex_lock(mtx);
-	new = value;
+	new = *value;
 	pthread_mutex_unlock(mtx);
 	return (new);
 }

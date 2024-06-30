@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 16:23:00 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/01 21:46:35 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 18:17:13 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,13 +95,11 @@ void	*ft_malloc(int size)
 
 void	ft_safe_print(t_philosopher *philo, char *message, t_routine routine)
 {
-	// pthread_mutex_lock(&philo->info->philo_died_lock);
-	// if (philo->info->philo_died)
+	// bool tmp = ft_get_val_b(&philo->info->philo_died_lock, philo->info->philo_died);
+	// if (tmp)
 	// {
-	// 	pthread_mutex_unlock(&philo->info->philo_died_lock);
-	// 	return ;
+		
 	// }
-	// pthread_mutex_unlock(&philo->info->philo_died_lock);
 	pthread_mutex_lock(&philo->lock_print);
 	printf("%ld %d %s%s\n", ft_get_time() - philo->info->start_time, philo->id, message, ft_get_routine(routine));
 	pthread_mutex_unlock(&philo->lock_print);

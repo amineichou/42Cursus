@@ -1,6 +1,6 @@
 NAME = philo
 CC = cc
-FLAGS = -Wall -Wextra -Werror   #-g -fsanitize=thread # -
+FLAGS = -Wall -Wextra -Werror  -g -fsanitize=thread
 SRC = ./ft_init_simulation.c \
 			./mtx_tools.c \
 			./parser.c \

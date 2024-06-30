@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 17:57:12 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/30 16:24:55 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 20:09:15 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,10 @@ void	*ft_routine(void *arg)
 	philo->last_meal = ft_get_time();
 	if (philo->id % 2 == 0)
 		ft_usleep(100);
-	while (ft_get_val_b(&philo->info->philo_died_lock, philo->info->philo_died))
+	bool	i = true;
+	while (i)
 	{
+		i = ft_get_val_b(&philo->info->philo_died_lock, &philo->info->philo_died);
 		ft_start_routine(EAT, philo);
 		ft_start_routine(SLEEP, philo);
 		ft_start_routine(THINK, philo);

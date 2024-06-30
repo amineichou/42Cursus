@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/30 16:24:18 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 20:09:39 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct s_fork
 typedef struct s_philoinfo
 {
 	int				number_of_philosophers;
-	int				time_to_die;
+	long			time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num__must_eat;
@@ -62,26 +62,26 @@ typedef enum s_routine
 	THINK
 }	t_routine;
 
-int			ft_parser(char **av, int ac);
-int			ft_isdigit(char c);
-int			ft_isspace(char c);
-void		*ft_malloc(int size);
-void		ft_printerror(char *msg);
-int			ft_atoi(const char *str);
-void		ft_safe_print(t_philosopher *philo, char *message, t_routine routine);
-long		ft_get_time(void);
-char		*ft_get_routine(t_routine routine);
-void		ft_usleep(long time);
-void		ft_init_simulation(int ac, char **av);
-void		*ft_routine(void *arg);
-void		ft_monitor(t_philosopher *head);
-bool		check_health(t_philosopher *philo);
+int				ft_parser(char **av, int ac);
+int				ft_isdigit(char c);
+int				ft_isspace(char c);
+void			*ft_malloc(int size);
+void			ft_printerror(char *msg);
+int				ft_atoi(const char *str);
+void			ft_safe_print(t_philosopher *philo, char *message, t_routine routine);
+long			ft_get_time(void);
+char			*ft_get_routine(t_routine routine);
+void			ft_usleep(long time);
+t_philosopher	*ft_init_simulation(int ac, char **av);
+void			*ft_routine(void *arg);
+void			ft_monitor(t_philosopher *head);
+bool			check_death(t_philosopher *philo);
 
 
 /* FUNCTIONS */
 void	ft_set_val(pthread_mutex_t *mtx, long *value, long new);
 long	ft_get_val(pthread_mutex_t *mtx, long value);
 void	ft_set_val_b(pthread_mutex_t *mtx, bool *value, bool new);
-bool	ft_get_val_b(pthread_mutex_t *mtx, bool value);
+bool	ft_get_val_b(pthread_mutex_t *mtx, bool *value);
 
 #endif
