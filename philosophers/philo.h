@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 14:16:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/03 20:17:40 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 16:24:18 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ typedef struct s_philoinfo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num__must_eat;
-	long		start_time;
+	long			start_time;
 	bool			philo_died;
 	pthread_mutex_t	philo_died_lock;
 	t_fork			*forks;
@@ -74,6 +74,14 @@ char		*ft_get_routine(t_routine routine);
 void		ft_usleep(long time);
 void		ft_init_simulation(int ac, char **av);
 void		*ft_routine(void *arg);
-void		*ft_monitor(t_philosopher *head);
+void		ft_monitor(t_philosopher *head);
+bool		check_health(t_philosopher *philo);
+
+
+/* FUNCTIONS */
+void	ft_set_val(pthread_mutex_t *mtx, long *value, long new);
+long	ft_get_val(pthread_mutex_t *mtx, long value);
+void	ft_set_val_b(pthread_mutex_t *mtx, bool *value, bool new);
+bool	ft_get_val_b(pthread_mutex_t *mtx, bool value);
 
 #endif

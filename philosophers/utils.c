@@ -95,8 +95,15 @@ void	*ft_malloc(int size)
 
 void	ft_safe_print(t_philosopher *philo, char *message, t_routine routine)
 {
+	// pthread_mutex_lock(&philo->info->philo_died_lock);
+	// if (philo->info->philo_died)
+	// {
+	// 	pthread_mutex_unlock(&philo->info->philo_died_lock);
+	// 	return ;
+	// }
+	// pthread_mutex_unlock(&philo->info->philo_died_lock);
 	pthread_mutex_lock(&philo->lock_print);
-	printf("%ld %d %s %s...\n", ft_get_time() - philo->info->start_time, philo->id, message, ft_get_routine(routine));
+	printf("%ld %d %s%s\n", ft_get_time() - philo->info->start_time, philo->id, message, ft_get_routine(routine));
 	pthread_mutex_unlock(&philo->lock_print);
 }
 

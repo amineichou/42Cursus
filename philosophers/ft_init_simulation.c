@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 14:51:10 by moichou           #+#    #+#             */
-/*   Updated: 2024/06/03 19:55:03 by moichou          ###   ########.fr       */
+/*   Updated: 2024/06/30 16:25:54 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,15 +65,15 @@ static t_philosopher	*ft_create_philos(t_philoinfo *info, t_fork *forks)
 			node->sec_fork= get_fork(forks, 0);
 		else
 			node->sec_fork = get_fork(forks, id + 1);
-		// if ((i + 1) % 2 == 0)
+		// if ((id + 1) % 2 == 0)
 		// {
-		// 	node->fst_fork = get_fork(forks, i);
-		// 	node->sec_fork = get_fork(forks, (i + 1) % info->number_of_philosophers);
+		// 	node->fst_fork = get_fork(forks, id);
+		// 	node->sec_fork = get_fork(forks, (id + 1) % info->number_of_philosophers);
 		// }
 		// else
 		// {
-		// 	node->fst_fork = get_fork(forks, (i + 1) % info->number_of_philosophers);
-		// 	node->sec_fork = get_fork(forks, i);
+		// 	node->fst_fork = get_fork(forks, (id + 1) % info->number_of_philosophers);
+		// 	node->sec_fork = get_fork(forks, id);
 		// }
 		pthread_mutex_init(&node->last_meal_lock, NULL);
 		pthread_mutex_init(&node->lock_print, NULL);
@@ -113,8 +113,7 @@ t_fork	*ft_create_forks(t_philoinfo *info)
 		node = ft_malloc(sizeof(t_fork));
 		node->id = id;
 		node->next = NULL;
-		if (-1 == pthread_mutex_init(&node->lock, NULL))
-			perror("init");
+		pthread_mutex_init(&node->lock, NULL);
 		ft_append_fork(&lst, node);
 		id++;
 		philo_num--;
@@ -122,29 +121,36 @@ t_fork	*ft_create_forks(t_philoinfo *info)
 	return (lst);
 }
 
-
-void	*ft_monitor(t_philosopher *head)
+bool	check_health(t_philosopher *philo)
 {
-	t_philosopher	*philo_lst;
-	long tmp;
+	long	tmp;
 
-	philo_lst = head;
-	while (true)
+	pthread_mutex_lock(&philo->last_meal_lock);
+	tmp = philo->last_meal;
+	pthread_mutex_unlock(&philo->last_meal_lock);
+	if (ft_get_time() - tmp > philo->info->time_to_die)
 	{
-		pthread_mutex_lock(&philo_lst->last_meal_lock);
-		tmp = philo_lst->last_meal;
-		pthread_mutex_unlock(&philo_lst->last_meal_lock);
-		if ((ft_get_time() - philo_lst->info->start_time) - tmp > philo_lst->info->time_to_die)
-		{
-			ft_safe_print(philo_lst, "died", -1);
-			exit(0);
-		}
-		if (philo_lst->next == NULL)
-			philo_lst = head;
-		else
-			philo_lst = philo_lst->next;
+		pthread_mutex_lock(&philo->info->philo_died_lock);
+		philo->info->philo_died = true;
+		pthread_mutex_unlock(&philo->info->philo_died_lock);
+		ft_safe_print(philo, "died", -1);
+		return (0);
 	}
-	return (NULL);
+	return (1);
+}
+
+void	ft_monitor(t_philosopher *head)
+{
+	t_philosopher	*philo;
+
+	philo = head;
+	while (philo && check_health(philo))
+	{
+		if (philo->next == NULL)
+			philo = head;
+		else
+			philo = philo->next;
+	}
 }
 
 void	ft_init_simulation(int ac, char **av)
@@ -159,21 +165,20 @@ void	ft_init_simulation(int ac, char **av)
 	info.time_to_die = ft_atoi(av[2]);
 	info.time_to_eat = ft_atoi(av[3]);
 	info.time_to_sleep = ft_atoi(av[4]);
-	info.philo_died = 0;
+	info.philo_died = false;
 	if (ac == 6)
 		info.num__must_eat = ft_atoi(av[5]);
 	else
 		info.num__must_eat = -1;
 	info.start_time = ft_get_time();
 	pthread_mutex_init(&info.philo_died_lock, NULL);
-	
+
 	// create forks
 	forks = ft_create_forks(&info);
 	// create philosphers
 	head = ft_create_philos(&info, forks);
 	if (!head)
 		return ;
-
 	// create threads
 	t_philosopher *tmp = head;
 	while (tmp)

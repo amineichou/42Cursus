@@ -3,5 +3,6 @@
         "__mutex_base": "c",
         "memory": "c",
         "mutex": "c"
-    }
+    },
+    "functionHeaderExtension.headerFilePath": "/Users/moichou/Desktop/42Cursus/philosophers/philo.h"
 }

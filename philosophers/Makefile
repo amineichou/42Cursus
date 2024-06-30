@@ -1,7 +1,14 @@
 NAME = philo
 CC = cc
 FLAGS = -Wall -Wextra -Werror   #-g -fsanitize=thread # -
-SRC = philo.c parser.c utils.c ft_init_simulation.c routines.c
+SRC = ./ft_init_simulation.c \
+			./mtx_tools.c \
+			./parser.c \
+			./philo.c \
+			./routines.c \
+			./test.c \
+			./utils.c
+
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
