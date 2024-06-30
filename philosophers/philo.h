@@ -36,7 +36,7 @@ typedef struct s_philoinfo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num__must_eat;
-	long long		start_time;
+	long		start_time;
 	bool			philo_died;
 	pthread_mutex_t	philo_died_lock;
 	t_fork			*forks;
@@ -50,8 +50,7 @@ typedef struct s_philosopher
 	t_fork					*fst_fork;
 	t_fork					*sec_fork;
 	t_philoinfo				*info;
-	pthread_mutex_t			*lock_print;
-	pthread_mutex_t			*lock_die_time;
+	pthread_mutex_t			lock_print;
 	pthread_mutex_t			last_meal_lock;
 	struct s_philosopher	*next;
 }	t_philosopher;
@@ -70,11 +69,11 @@ void		*ft_malloc(int size);
 void		ft_printerror(char *msg);
 int			ft_atoi(const char *str);
 void		ft_safe_print(t_philosopher *philo, char *message, t_routine routine);
-long long	ft_get_time(void);
+long		ft_get_time(void);
 char		*ft_get_routine(t_routine routine);
-void		ft_usleep(size_t time);
+void		ft_usleep(long time);
 void		ft_init_simulation(int ac, char **av);
 void		*ft_routine(void *arg);
-void		*ft_monitor(void *arg);
+void		*ft_monitor(t_philosopher *head);
 
 #endif

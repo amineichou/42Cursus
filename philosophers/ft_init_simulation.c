@@ -49,30 +49,34 @@ static t_philosopher	*ft_create_philos(t_philoinfo *info, t_fork *forks)
 {
 	t_philosopher	*lst;
 	t_philosopher	*node;
-	pthread_mutex_t	lock_print;
-	pthread_mutex_t	rotine;
-	pthread_mutex_t last_meal_lock;
 	int				id;
 
 	lst = NULL;
 	id = 1;
-	pthread_mutex_init(&lock_print, NULL);
-	pthread_mutex_init(&rotine, NULL);
-	if (0 != pthread_mutex_init(&last_meal_lock, NULL))
-		perror("init");
 	int i = info->number_of_philosophers;
 	while (i--)
 	{
 		node = ft_malloc(sizeof(t_philosopher));
 		node->id = id;
 		node->info = info;
-		node->lock_print = &lock_print;
 		node->last_meal = 0;
 		node->fst_fork = get_fork(forks, id);
 		if (id == info->number_of_philosophers)
 			node->sec_fork= get_fork(forks, 0);
 		else
 			node->sec_fork = get_fork(forks, id + 1);
+		// if ((i + 1) % 2 == 0)
+		// {
+		// 	node->fst_fork = get_fork(forks, i);
+		// 	node->sec_fork = get_fork(forks, (i + 1) % info->number_of_philosophers);
+		// }
+		// else
+		// {
+		// 	node->fst_fork = get_fork(forks, (i + 1) % info->number_of_philosophers);
+		// 	node->sec_fork = get_fork(forks, i);
+		// }
+		pthread_mutex_init(&node->last_meal_lock, NULL);
+		pthread_mutex_init(&node->lock_print, NULL);
 		id++;
 		ft_appand_philosopher(&lst, node);
 	}
@@ -118,6 +122,31 @@ t_fork	*ft_create_forks(t_philoinfo *info)
 	return (lst);
 }
 
+
+void	*ft_monitor(t_philosopher *head)
+{
+	t_philosopher	*philo_lst;
+	long tmp;
+
+	philo_lst = head;
+	while (true)
+	{
+		pthread_mutex_lock(&philo_lst->last_meal_lock);
+		tmp = philo_lst->last_meal;
+		pthread_mutex_unlock(&philo_lst->last_meal_lock);
+		if ((ft_get_time() - philo_lst->info->start_time) - tmp > philo_lst->info->time_to_die)
+		{
+			ft_safe_print(philo_lst, "died", -1);
+			exit(0);
+		}
+		if (philo_lst->next == NULL)
+			philo_lst = head;
+		else
+			philo_lst = philo_lst->next;
+	}
+	return (NULL);
+}
+
 void	ft_init_simulation(int ac, char **av)
 {
 	t_philosopher	*head;
@@ -137,24 +166,23 @@ void	ft_init_simulation(int ac, char **av)
 		info.num__must_eat = -1;
 	info.start_time = ft_get_time();
 	pthread_mutex_init(&info.philo_died_lock, NULL);
+	
 	// create forks
 	forks = ft_create_forks(&info);
 	// create philosphers
 	head = ft_create_philos(&info, forks);
 	if (!head)
 		return ;
-	// create monitor thread
-	pthread_t	monitor_th;
-	pthread_create(&monitor_th, NULL, &ft_monitor, head);
 
 	// create threads
 	t_philosopher *tmp = head;
-
 	while (tmp)
 	{
-		pthread_create(&tmp->id_thread, NULL, &ft_routine, tmp);
+		pthread_create(&tmp->id_thread, NULL, ft_routine, tmp);
 		tmp = tmp->next;
 	}
+	// create monitor thread
+	ft_monitor(head);
 	// start simulation
 	tmp = head;
 	while (tmp)
@@ -162,5 +190,4 @@ void	ft_init_simulation(int ac, char **av)
 		pthread_join(tmp->id_thread, NULL);
 		tmp = tmp->next;
 	}
-	pthread_join(monitor_th, NULL);
 }
