@@ -2,7 +2,8 @@
     "files.associations": {
         "__mutex_base": "c",
         "memory": "c",
-        "mutex": "c"
+        "mutex": "c",
+        "philo.h": "c"
     },
     "functionHeaderExtension.headerFilePath": "/Users/moichou/Desktop/42Cursus/philosophers/philo.h"
 }
