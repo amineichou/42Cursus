@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:49 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 18:43:57 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/03 11:52:34 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,6 @@ void	ft_usleep(long time)
 // routine safe print
 void	safe_print_r(t_philoinfo *info, int philo_id, char *message)
 {
-	// bool tmp = get_val_b(&(info->philo_died_lock), &(info->philo_died));
-	// if (tmp)
-	// {
-	// 	return ;
-	// }
 	pthread_mutex_lock(&info->lock_print);
 	printf("%ld %d %s\n", ft_get_time() - info->start_time, philo_id, message);
 	pthread_mutex_unlock(&info->lock_print);

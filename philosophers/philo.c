@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 19:01:59 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/03 14:36:00 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,17 @@ void	start_simulation(t_philosopher *head)
 	t_philosopher	*tmp;
 
 	tmp = head;
+	if (tmp->info->philo_total)
+	{
+		pthread_create(&tmp->id_thread, NULL, routine, tmp);
+		pthread_detach(head->id_thread);
+		return ;
+	}
 	while (tmp)
 	{
 		pthread_create(&tmp->id_thread, NULL, routine, tmp);
+		if (tmp->id % 2)
+			ft_usleep(100);
 		tmp = tmp->next;
 	}
 }
@@ -99,7 +107,13 @@ int main(int ac, char **av)
 			philo = init(&info);
 			start_simulation(philo);
 			monitor(philo);
-			end_simulation(philo);
+			// if (info.philo_total == 1)
+			// {
+			// 	pthread_detach(philo->id_thread);
+			// }
+			// else
+			if (info.philo_total != 1)
+				end_simulation(philo);
 		}
 		else
 			return (0);

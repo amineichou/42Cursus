@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:13 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 16:54:33 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/03 10:44:35 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_philosopher	*create_philos(t_philoinfo *info, t_fork *forks)
 	{
 		node = ft_malloc(sizeof(t_philosopher));
 		node->id = id;
-		node->last_meal = 0;
+		node->last_meal = ft_get_time();
 		node->fst_fork = get_fork(forks, id);
 		if (id == info->philo_total)
 			node->sec_fork= get_fork(forks, 0);
