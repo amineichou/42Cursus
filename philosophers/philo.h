@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:12:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 18:37:42 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/03 16:50:51 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ typedef struct s_philoinfo
 	bool			philo_died;
 	t_fork			*forks;
 	pthread_mutex_t	philo_died_lock;
-	pthread_mutex_t	lock_print;
+	pthread_mutex_t	print_lock;
 }	t_philoinfo;
 
 typedef struct s_philosopher
@@ -49,6 +49,8 @@ typedef struct s_philosopher
 	pthread_t				id_thread;
 	long					last_meal;
 	pthread_mutex_t			last_meal_lock;
+	long					eaten_meals;
+	pthread_mutex_t			eaten_meals_lock;
 	t_fork					*fst_fork;
 	t_fork					*sec_fork;
 	t_philoinfo				*info;
@@ -74,7 +76,7 @@ void			ft_printerror(char *msg);
 int				ft_atoi(const char *str);
 void			*ft_malloc(int size);
 long			ft_get_time(void);
-void			ft_usleep(long time);
+void			ft_usleep(long time, t_philoinfo *info);
 void			safe_print_r(t_philoinfo *info, int philo_id, char *message);
 
 

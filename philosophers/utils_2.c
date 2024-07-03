@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:49 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/03 11:52:34 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/03 17:54:22 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,22 @@ long	ft_get_time(void)
 	return ((timestamp.tv_sec * 1000) + (timestamp.tv_usec / 1000));
 }
 
-void	ft_usleep(long time)
+void	ft_usleep(long time, t_philoinfo *info)
 {
 	long	start;
 
 	start = ft_get_time();
 	while (ft_get_time() - start < time)
 	{
-		usleep(1);
+		if (get_val_b(&(info->philo_died_lock), &(info->philo_died)))
+			break ;
 	}
 }
 
 // routine safe print
 void	safe_print_r(t_philoinfo *info, int philo_id, char *message)
 {
-	pthread_mutex_lock(&info->lock_print);
+	pthread_mutex_lock(&info->print_lock);
 	printf("%ld %d %s\n", ft_get_time() - info->start_time, philo_id, message);
-	pthread_mutex_unlock(&info->lock_print);
+	pthread_mutex_unlock(&info->print_lock);
 }
