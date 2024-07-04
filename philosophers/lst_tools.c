@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:13 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/03 17:58:32 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/04 18:04:14 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,8 @@ t_philosopher	*create_philos(t_philoinfo *info, t_fork *forks)
 			node->sec_fork = get_fork(forks, id + 1);
 		node->info = info;
 		node->eaten_meals = 0;
-		pthread_mutex_init(&(node->eaten_meals_lock), NULL);
+		pthread_mutex_init(&node->eaten_meals_lock, NULL);
 		pthread_mutex_init(&node->last_meal_lock, NULL);
-		pthread_mutex_init(&node->info->print_lock, NULL);
 		id++;
 		appand_philosopher(&lst, node);
 	}

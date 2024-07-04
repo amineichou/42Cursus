@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/03 21:18:30 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/04 22:29:28 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,63 +36,53 @@ void	end_simulation(t_philosopher *head)
 {
 	t_philosopher   *tmp;
 
+	// tmp = head;
+	// while (tmp)
+	// {
+	// 	// dprintf(2, "HELLO\n");
+	// 	pthread_mutex_unlock(&tmp->fst_fork->lock);
+	// 	pthread_mutex_unlock(&tmp->sec_fork->lock);
+	// 	pthread_mutex_unlock(&tmp->info->print_lock);
+	// 	pthread_mutex_unlock(&tmp->info->philo_died_lock);
+	// 	pthread_mutex_unlock(&tmp->eaten_meals_lock);
+	// 	pthread_mutex_destroy(&tmp->last_meal_lock);
+	// 	pthread_mutex_destroy(&tmp->eaten_meals_lock);
+	// 	pthread_mutex_destroy(&tmp->info->philo_died_lock);
+	// 	pthread_mutex_destroy(&tmp->info->print_lock);
+	// 	pthread_mutex_destroy(&tmp->fst_fork->lock);
+	// 	pthread_mutex_destroy(&tmp->sec_fork->lock);
+	// 	tmp = tmp->next;
+	// }
 	tmp = head;
 	while (tmp)
 	{
-		// dprintf(2, "HELLO\n");
-		pthread_join(tmp->id_thread, NULL);
-		// pthread_mutex_destroy(&tmp->last_meal_lock);
-		// pthread_mutex_destroy(&tmp->eaten_meals_lock);
-		// pthread_mutex_destroy(&tmp->info->philo_died_lock);
-		// pthread_mutex_destroy(&tmp->info->lock_print);
-		// pthread_mutex_unlock(&(tmp->fst_fork->lock));
-		// pthread_mutex_unlock(&(tmp->sec_fork->lock));
-		// pthread_mutex_destroy(&tmp->fst_fork->lock);
-		// pthread_mutex_destroy(&tmp->sec_fork->lock);
+		pthread_detach(tmp->id_thread);
 		tmp = tmp->next;
 	}
 }
 
-bool	check_death(t_philosopher *philo)
+void	*monitor(void *args)
 {
-	long	tmp;
+	t_philosopher	*philos;
+	long			time;
+	int				i;
 
-	tmp = get_val(&philo->last_meal_lock, &philo->last_meal);
-	if (ft_get_time() - tmp > philo->info->time_to_die)
+	philos = (t_philosopher *)args;
+	while (true)
 	{
-		set_val_b(&philo->info->philo_died_lock, &philo->info->philo_died, true);
-		safe_print_r(philo->info, philo->id, "\033[0;31m\n--------------------------------------------------------------------------------------------------------\ndied\n------------------------------------------------------------------------------\n\033[0;0m");
-		return (0);
+		i = 0;
+		while (++i < philos->info->philo_total)
+		{
+			time = ft_get_time();
+			if (time - get_val(&philos->last_meal_lock, &philos->last_meal) > philos->info->time_to_die)
+			{
+				safe_print_r(philos->info, philos->id, "died");
+				set_val_b(&philos->info->philo_died_lock, &philos->info->philo_died, true);
+				return (NULL);
+			}
+		}
 	}
-	return (1);
-}
-
-bool	check_full(t_philosopher *philos)
-{
-	t_philosopher	*tmp;
-
-	tmp = philos;
-	while (tmp)
-	{
-		if (get_val(&philos->eaten_meals_lock, &philos->eaten_meals) < philos->info->meals_total)
-			return (false);
-		tmp = tmp->next;
-	}
-	return (true);
-}
-
-void	monitor(t_philosopher *philos)
-{
-	t_philosopher	*tmp;
-
-	tmp = philos;
-	while (tmp && check_death(tmp) && (philos->info->meals_total != -1 && !check_full(philos)))
-	{
-		if (tmp->next == NULL)
-			tmp = philos;
-		else
-			tmp = tmp->next;
-	}
+	return (NULL);
 }
 
 t_philoinfo	create_info(int ac, char **av)
@@ -110,6 +100,7 @@ t_philoinfo	create_info(int ac, char **av)
 	else
 		info.meals_total = -1;
 	pthread_mutex_init(&info.philo_died_lock, NULL);
+	pthread_mutex_init(&info.print_lock, NULL);
 	return (info);
 }
 
@@ -121,7 +112,9 @@ int main(int ac, char **av)
 {
 	t_philosopher	*philo;
 	t_philoinfo		info;
-		t_philosopher	*tmp;
+	pthread_t		th_monitor;
+
+		// t_philosopher	*tmp;
 
 	philo = NULL;
 	if (ac == 5 || ac == 6)
@@ -131,11 +124,13 @@ int main(int ac, char **av)
 			info = create_info(ac, av);
 			philo = init(&info);
 			start_simulation(philo);
-			monitor(philo);
+			// monitor(philo);
+			pthread_create(&th_monitor, NULL, monitor, philo);
 			// if (info.philo_total != 1)
-				end_simulation(philo);
 			// else
 			// 	pthread_detach(philo->id_thread);
+			end_simulation(philo);
+			pthread_join(th_monitor, NULL);
 		}
 		else
 			return (0);
@@ -144,11 +139,11 @@ int main(int ac, char **av)
 		ft_printerror("no valid arguments\n");
 	else
 		ft_printerror("arguments required\n");
-			tmp = philo;
-			while (tmp)
-			{
-				dprintf(2, "[%ld]", get_val(&(tmp->eaten_meals_lock), &(tmp->eaten_meals)));
-				tmp = tmp->next;
-			}
+			// tmp = philo;
+			// while (tmp)
+			// {
+			// 	dprintf(2, "[%ld]", get_val(&(tmp->eaten_meals_lock), &(tmp->eaten_meals)));
+			// 	tmp = tmp->next;
+			// }
 	return (0);
 }
