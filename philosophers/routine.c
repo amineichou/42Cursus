@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:05:05 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/04 22:34:57 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 12:09:20 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,6 @@ int	eat_routine(t_philosopher *philo)
 	// take forks
 	pthread_mutex_lock(&philo->fst_fork->lock);
 	safe_print_r(philo->info, philo->id, "has taken a fork");
-	if (philo->info->philo_total == 1)
-	{
-		while(!get_val_b(&philo->info->philo_died_lock, &philo->info->philo_died))
-			;
-		pthread_mutex_unlock(&philo->fst_fork->lock);
-		return (0);
-	}
 	pthread_mutex_lock(&philo->sec_fork->lock);
 	safe_print_r(philo->info, philo->id, "has taken a fork");
 	// start eating
@@ -43,8 +36,8 @@ int	eat_routine(t_philosopher *philo)
 
 void	sleep_routine(t_philosopher *philo)
 {
-	ft_usleep(philo->info->time_to_sleep, philo->info);
 	safe_print_r(philo->info, philo->id, "is sleeping");
+	ft_usleep(philo->info->time_to_sleep, philo->info);
 }
 
 void	think_routine(t_philosopher *philo)
@@ -57,6 +50,8 @@ void	*routine(void *arg)
 	t_philosopher	*philo;
 
 	philo = (t_philosopher *)arg;
+	if (philo->id % 2 == 0)
+			ft_usleep(100, philo->info);
 	while (get_val_b(&philo->info->philo_died_lock, &philo->info->philo_died) == false)
 	{
 		if (eat_routine(philo) == 0)

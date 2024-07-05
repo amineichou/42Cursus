@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/04 22:29:28 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 12:22:22 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,15 @@ void	start_simulation(t_philosopher *head)
 	t_philosopher	*tmp;
 
 	tmp = head;
-	// if (tmp->info->philo_total == 1)
-	// {
-	// 	pthread_create(&tmp->id_thread, NULL, routine, tmp);
-	// 	pthread_detach(tmp->id_thread);
-	// 	return ;
-	// }
+	if (tmp->info->philo_total == 1)
+	{
+		pthread_create(&tmp->id_thread, NULL, routine, tmp);
+		pthread_detach(tmp->id_thread);
+		return ;
+	}
 	while (tmp)
 	{
 		pthread_create(&tmp->id_thread, NULL, routine, tmp);
-		if (tmp->id % 2)
-			ft_usleep(100, head->info);
 		tmp = tmp->next;
 	}
 }
@@ -56,7 +54,7 @@ void	end_simulation(t_philosopher *head)
 	tmp = head;
 	while (tmp)
 	{
-		pthread_detach(tmp->id_thread);
+		pthread_join(tmp->id_thread, NULL);
 		tmp = tmp->next;
 	}
 }
@@ -65,21 +63,27 @@ void	*monitor(void *args)
 {
 	t_philosopher	*philos;
 	long			time;
-	int				i;
+	int				is_full;
 
-	philos = (t_philosopher *)args;
+	is_full = 0;
 	while (true)
 	{
-		i = 0;
-		while (++i < philos->info->philo_total)
+		philos = (t_philosopher *)args;
+		if (is_full == philos->info->philo_total)
+			return (NULL);
+		while (philos)
 		{
 			time = ft_get_time();
-			if (time - get_val(&philos->last_meal_lock, &philos->last_meal) > philos->info->time_to_die)
+			if (time - get_val(&philos->last_meal_lock, &philos->last_meal) > philos->info->time_to_die
+				&& (get_val(&philos->eaten_meals_lock, &philos->eaten_meals) < philos->info->meals_total || philos->info->meals_total == -1))
 			{
 				safe_print_r(philos->info, philos->id, "died");
 				set_val_b(&philos->info->philo_died_lock, &philos->info->philo_died, true);
 				return (NULL);
 			}
+			if (get_val(&philos->eaten_meals_lock, &philos->eaten_meals) >= philos->info->meals_total)
+				is_full++;
+			philos = philos->next;
 		}
 	}
 	return (NULL);
@@ -124,11 +128,7 @@ int main(int ac, char **av)
 			info = create_info(ac, av);
 			philo = init(&info);
 			start_simulation(philo);
-			// monitor(philo);
 			pthread_create(&th_monitor, NULL, monitor, philo);
-			// if (info.philo_total != 1)
-			// else
-			// 	pthread_detach(philo->id_thread);
 			end_simulation(philo);
 			pthread_join(th_monitor, NULL);
 		}

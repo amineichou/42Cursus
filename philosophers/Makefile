@@ -1,6 +1,6 @@
 NAME = philo
 CC = cc
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror # -g -fsanitize=thread
 SRC =	init.c \
 		lst_tools.c \
 		mtx_tools.c \
