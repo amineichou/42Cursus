@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 16:12:23 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 17:26:56 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,15 +113,15 @@ int main(int ac, char **av)
 			if (info.philo_total == 0 || info.meals_total == 0)
 				return (0);
 			philo = init(&info);
+			if (!philo)
+				return (0);
 			start_simulation(philo);
 			pthread_create(&th_monitor, NULL, monitor, philo);
 			end_simulation(philo);
 			pthread_join(th_monitor, NULL);
 		}
 	}
-	else if (ac > 1)
-		ft_printerror("no valid arguments\n");
 	else
-		ft_printerror("arguments required\n");
+		ft_printerror("no valid arguments\n");
 	return (0);
 }

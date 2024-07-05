@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:46:32 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 16:26:38 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 17:37:38 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,20 @@ static int	ft_isvalid_number(char *str)
 	return (1);
 }
 
-static void ft_checkerror(int i)
+static void	ft_checkerror(int i)
 {
 	i -= 1;
-	char *test[] = {"number_of_philosophers", "time_to_die",\
-	"time_to_eat", "time_to_sleep",\
-	"number_of_times_each_philosopher_must_eat"};
 	ft_printerror("\033[0;31m");
-	ft_printerror(test[i]);
+	if (i == 0)
+		ft_printerror(NOF);
+	else if (i == 1)
+		ft_printerror(TTD);
+	else if (i == 2)
+		ft_printerror(TTE);
+	else if (i == 3)
+		ft_printerror(TTS);
+	else if (i == 4)
+		ft_printerror(NOTEPME);
 	ft_printerror("\033[0;0m");
 	ft_printerror(" not a valid number.\n");
 }
@@ -97,7 +103,7 @@ int	parser(char **av, int ac)
 {
 	int	i;
 
-	i  = 1;
+	i = 1;
 	while (i < ac)
 	{
 		if (!ft_isvalid_number(av[i]))

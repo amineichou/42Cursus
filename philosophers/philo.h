@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:12:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/03 16:50:51 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 17:37:46 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
+#define NOF "number_of_philosophers"
+#define TTD "time_to_die"
+#define TTE "time_to_eat"
+#define TTS "time_to_sleep"
+#define NOTEPME "number_of_times_each_philosopher_must_eat"
 
 typedef struct s_fork
 {
@@ -74,7 +79,6 @@ int				ft_isdigit(char c);
 int				ft_isspace(char c);
 void			ft_printerror(char *msg);
 int				ft_atoi(const char *str);
-void			*ft_malloc(int size);
 long			ft_get_time(void);
 void			ft_usleep(long time, t_philoinfo *info);
 void			safe_print_r(t_philoinfo *info, int philo_id, char *message);

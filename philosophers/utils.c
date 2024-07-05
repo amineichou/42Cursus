@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:23:33 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/01 15:33:17 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 16:58:45 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,4 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	return (res * sign);
-}
-
-void	*ft_malloc(int size)
-{
-	void	*ptr = malloc(size);
-	if (!size)
-	{
-		ft_printerror("malloc error !\n");
-		exit(1);
-	}
-	return (ptr);
 }

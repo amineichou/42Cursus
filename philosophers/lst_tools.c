@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:13 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 11:22:23 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 17:28:45 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,29 +36,29 @@ t_philosopher	*create_philos(t_philoinfo *info, t_fork *forks)
 	int				id;
 
 	lst = NULL;
-	id = 1;
-	int i = info->philo_total;
-	while (i--)
+	id = 0;
+	while (++id <= info->philo_total)
 	{
-		node = ft_malloc(sizeof(t_philosopher));
+		node = malloc(sizeof(t_philosopher));
+		if (!node)
+			return (NULL);
 		node->id = id;
 		node->last_meal = ft_get_time();
-		node->fst_fork = get_fork(forks, id);
-		if (id == info->philo_total)
-			node->sec_fork= get_fork(forks, 1);
-		else
-			node->sec_fork = get_fork(forks, id + 1);
 		node->info = info;
 		node->eaten_meals = 0;
+		node->fst_fork = get_fork(forks, id);
+		if (id == info->philo_total)
+			node->sec_fork = get_fork(forks, 1);
+		else
+			node->sec_fork = get_fork(forks, id + 1);
 		pthread_mutex_init(&node->eaten_meals_lock, NULL);
 		pthread_mutex_init(&node->last_meal_lock, NULL);
-		id++;
 		appand_philosopher(&lst, node);
 	}
 	return (lst);
 }
 
-static void append_fork(t_fork **lst, t_fork *node)
+static void	append_fork(t_fork **lst, t_fork *node)
 {
 	t_fork	*tmp;
 
@@ -85,7 +85,9 @@ t_fork	*create_forks(t_philoinfo *info)
 	philo_num = info->philo_total;
 	while (philo_num)
 	{
-		node = ft_malloc(sizeof(t_fork));
+		node = malloc(sizeof(t_fork));
+		if (!node)
+			return (NULL);
 		node->id = id;
 		node->next = NULL;
 		pthread_mutex_init(&node->lock, NULL);
