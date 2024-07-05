@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:49 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 16:44:22 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 21:14:53 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 long	ft_get_time(void)
 {
 	struct timeval	timestamp;
+
 	gettimeofday(&timestamp, NULL);
 	return ((timestamp.tv_sec * 1000) + (timestamp.tv_usec / 1000));
 }

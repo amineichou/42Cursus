@@ -6,26 +6,26 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:12:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 17:37:46 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 21:13:53 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FILO_H
-#define FILO_H
+#ifndef PHILO_H
+# define PHILO_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <pthread.h>
+# include <limits.h>
+# include <sys/time.h>
+# include <stdbool.h>
 
-#define NOF "number_of_philosophers"
-#define TTD "time_to_die"
-#define TTE "time_to_eat"
-#define TTS "time_to_sleep"
-#define NOTEPME "number_of_times_each_philosopher_must_eat"
+# define NOF "number_of_philosophers"
+# define TTD "time_to_die"
+# define TTE "time_to_eat"
+# define TTS "time_to_sleep"
+# define NOTEPME "number_of_times_each_philosopher_must_eat"
 
 typedef struct s_fork
 {
@@ -70,7 +70,6 @@ typedef enum s_routine
 }	t_routine;
 
 /* main */
-t_philosopher	*init(t_philoinfo *info);
 void			*routine(void *arg);
 int				parser(char **av, int ac);
 
@@ -82,7 +81,6 @@ int				ft_atoi(const char *str);
 long			ft_get_time(void);
 void			ft_usleep(long time, t_philoinfo *info);
 void			safe_print_r(t_philoinfo *info, int philo_id, char *message);
-
 
 /* routine */
 void			*routine(void *arg);
@@ -97,5 +95,10 @@ long			get_val(pthread_mutex_t *mtx, long *value);
 void			set_val(pthread_mutex_t *mtx, long *value, long new);
 bool			get_val_b(pthread_mutex_t *mtx, bool *value);
 void			set_val_b(pthread_mutex_t *mtx, bool *value, bool new);
+
+/* init */
+void			start_simulation(t_philosopher *head);
+void			end_simulation(t_philosopher *head);
+t_philosopher	*init(t_philoinfo *info);
 
 #endif
