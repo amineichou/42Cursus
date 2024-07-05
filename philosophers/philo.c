@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 12:22:22 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 16:12:23 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,23 +34,6 @@ void	end_simulation(t_philosopher *head)
 {
 	t_philosopher   *tmp;
 
-	// tmp = head;
-	// while (tmp)
-	// {
-	// 	// dprintf(2, "HELLO\n");
-	// 	pthread_mutex_unlock(&tmp->fst_fork->lock);
-	// 	pthread_mutex_unlock(&tmp->sec_fork->lock);
-	// 	pthread_mutex_unlock(&tmp->info->print_lock);
-	// 	pthread_mutex_unlock(&tmp->info->philo_died_lock);
-	// 	pthread_mutex_unlock(&tmp->eaten_meals_lock);
-	// 	pthread_mutex_destroy(&tmp->last_meal_lock);
-	// 	pthread_mutex_destroy(&tmp->eaten_meals_lock);
-	// 	pthread_mutex_destroy(&tmp->info->philo_died_lock);
-	// 	pthread_mutex_destroy(&tmp->info->print_lock);
-	// 	pthread_mutex_destroy(&tmp->fst_fork->lock);
-	// 	pthread_mutex_destroy(&tmp->sec_fork->lock);
-	// 	tmp = tmp->next;
-	// }
 	tmp = head;
 	while (tmp)
 	{
@@ -65,12 +48,15 @@ void	*monitor(void *args)
 	long			time;
 	int				is_full;
 
-	is_full = 0;
 	while (true)
 	{
 		philos = (t_philosopher *)args;
-		if (is_full == philos->info->philo_total)
+		if (philos->info->meals_total != -1 && is_full == philos->info->philo_total)
+		{
+			set_val_b(&philos->info->philo_died_lock, &philos->info->philo_died, true);
 			return (NULL);
+		}
+		is_full = 0;
 		while (philos)
 		{
 			time = ft_get_time();
@@ -118,32 +104,24 @@ int main(int ac, char **av)
 	t_philoinfo		info;
 	pthread_t		th_monitor;
 
-		// t_philosopher	*tmp;
-
 	philo = NULL;
 	if (ac == 5 || ac == 6)
 	{
 		if (parser(av, ac))
 		{
 			info = create_info(ac, av);
+			if (info.philo_total == 0 || info.meals_total == 0)
+				return (0);
 			philo = init(&info);
 			start_simulation(philo);
 			pthread_create(&th_monitor, NULL, monitor, philo);
 			end_simulation(philo);
 			pthread_join(th_monitor, NULL);
 		}
-		else
-			return (0);
 	}
 	else if (ac > 1)
 		ft_printerror("no valid arguments\n");
 	else
 		ft_printerror("arguments required\n");
-			// tmp = philo;
-			// while (tmp)
-			// {
-			// 	dprintf(2, "[%ld]", get_val(&(tmp->eaten_meals_lock), &(tmp->eaten_meals)));
-			// 	tmp = tmp->next;
-			// }
 	return (0);
 }

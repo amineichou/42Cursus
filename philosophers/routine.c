@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:05:05 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 12:09:20 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/05 15:13:55 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 int	eat_routine(t_philosopher *philo)
 {
-	long	eaten_meals_tmp;
-
-	eaten_meals_tmp = get_val(&philo->eaten_meals_lock, &philo->eaten_meals);
 	// take forks
 	pthread_mutex_lock(&philo->fst_fork->lock);
 	safe_print_r(philo->info, philo->id, "has taken a fork");
@@ -26,7 +23,12 @@ int	eat_routine(t_philosopher *philo)
 	safe_print_r(philo->info, philo->id, "is eating");
 	ft_usleep(philo->info->time_to_eat, philo->info);
 	if (philo->info->meals_total != -1)
-		set_val(&philo->eaten_meals_lock, &philo->eaten_meals, eaten_meals_tmp + 1);
+	{
+		pthread_mutex_lock(&philo->eaten_meals_lock);
+		philo->eaten_meals++;
+		pthread_mutex_unlock(&philo->eaten_meals_lock);
+	}
+		// set_val(, &philo->eaten_meals, get_val(&philo->eaten_meals_lock, &philo->eaten_meals) + 1);
 	set_val(&philo->last_meal_lock, &philo->last_meal, ft_get_time());
 	// let go forks
 	pthread_mutex_unlock(&philo->fst_fork->lock);
