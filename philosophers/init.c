@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:51:07 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 18:45:53 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/07 12:11:10 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ t_philosopher	*init(t_philoinfo *info)
 	forks = create_forks(info);
 	if (!forks)
 		return (NULL);
+	info->forks = forks;
 	head = create_philos(info, forks);
 	if (!head)
 		return (NULL);

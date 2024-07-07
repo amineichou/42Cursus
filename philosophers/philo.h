@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:12:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 21:13:53 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/07 10:26:33 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int				ft_atoi(const char *str);
 long			ft_get_time(void);
 void			ft_usleep(long time, t_philoinfo *info);
 void			safe_print_r(t_philoinfo *info, int philo_id, char *message);
+void			clean_program(t_philosopher *philo, t_fork *forks);
 
 /* routine */
 void			*routine(void *arg);

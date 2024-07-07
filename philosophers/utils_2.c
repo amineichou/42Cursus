@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 15:35:49 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 21:14:53 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/07 12:14:10 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,38 @@ void	safe_print_r(t_philoinfo *info, int philo_id, char *message)
 	}
 	printf("%ld %d %s\n", ft_get_time() - info->start_time, philo_id, message);
 	pthread_mutex_unlock(&info->print_lock);
+}
+
+void	free_philos(t_philosopher *philo)
+{
+	t_philosopher	*tofree;
+
+	while (philo)
+	{
+		tofree = philo;
+		philo = philo->next;
+		if (tofree)
+		{
+			pthread_mutex_destroy(&tofree->last_meal_lock);
+			pthread_mutex_destroy(&tofree->eaten_meals_lock);
+			free(tofree);
+		}
+	}
+}
+
+void	clean_program(t_philosopher *philo, t_fork *forks)
+{
+	t_fork			*tofree;
+
+	pthread_mutex_destroy(&philo->info->print_lock);
+	pthread_mutex_destroy(&philo->info->philo_died_lock);
+	free_philos(philo);
+	while (forks)
+	{
+		tofree = forks;
+		if (forks)
+			forks = forks->next;
+		pthread_mutex_destroy(&tofree->lock);
+		free(tofree);
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: moichou <moichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 14:11:23 by moichou           #+#    #+#             */
-/*   Updated: 2024/07/05 18:51:27 by moichou          ###   ########.fr       */
+/*   Updated: 2024/07/07 12:16:13 by moichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ int	main(int ac, char **av)
 			pthread_create(&th_monitor, NULL, monitor, philo);
 			end_simulation(philo);
 			pthread_join(th_monitor, NULL);
+			clean_program(philo, info.forks);
 		}
 	}
 	else
