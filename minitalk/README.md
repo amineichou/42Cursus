@@ -93,4 +93,4 @@ while (true)
 - the linux programming interface (book)
 
 ### How Minitalk works ?
-check this article : https://m4nnb3ll.medium.com/first-time-to-work-with-signals-minitalk-a-42-the-network-project-8bae32237975
+check this article : [Article](https://m4nnb3ll.medium.com/first-time-to-work-with-signals-minitalk-a-42-the-network-project-8bae32237975)
