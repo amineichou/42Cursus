@@ -1,0 +1,5 @@
+.vscode
+tests
+*.o
+cub3d
+.DS_Store
