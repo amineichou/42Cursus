@@ -1,1 +1,0 @@
-clear && cc -g minishell.c -lreadline  parsing/sanitize_synthax/*.c parsing/*.c parsing/analyser/*.c ./expanding/*.c parsing/test/*.c parsing/tools/*.c  -fsanitize=address  -o minishell && ./minishell
